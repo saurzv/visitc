@@ -1,7 +1,12 @@
 package removing
 
+import (
+	"github.com/saurzv/visitc/pkg/listing"
+)
+
 type Repository interface {
-	RemoveSite(string) error
+	GetSite(string) (listing.Site, error)
+	RemoveSite(listing.Site) error
 }
 
 type Service interface {
@@ -17,7 +22,11 @@ func NewService(r Repository) Service {
 }
 
 func (s *service) RemoveSite(id string) error {
-	if err := s.r.RemoveSite(id); err != nil {
+	availableSite, err := s.r.GetSite(id)
+	if err != nil {
+		return err
+	}
+	if err := s.r.RemoveSite(availableSite); err != nil {
 		return err
 	}
 	return nil
