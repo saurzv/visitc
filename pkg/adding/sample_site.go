@@ -1,5 +1,10 @@
 package adding
 
-var DefaultSite = Site{
-	Name: "Github-2",
+var DefaultSite = []Site{
+	{
+		Name: "Github",
+	},
+	{
+		Name: "Blog",
+	},
 }

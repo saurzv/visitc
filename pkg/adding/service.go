@@ -2,20 +2,17 @@ package adding
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/saurzv/visitc/pkg/listing"
 )
 
-var ErrDuplicate = errors.New("site alreay exists")
-
 type Service interface {
-	AddSite(Site) error
-	RemoveSite(string) error
+	AddSite(...Site) error
 }
 
 type Repository interface {
 	AddSite(Site) error
-	RemoveSite(string) error
 	GetAllSites() []listing.Site
 }
 
@@ -27,20 +24,23 @@ func NewService(r Repository) Service {
 	return &service{r}
 }
 
-func (s *service) AddSite(newSite Site) error {
-	sites := s.r.GetAllSites()
+func (s *service) AddSite(sites ...Site) error {
+	allSites := s.r.GetAllSites()
+
+	mp := map[string]bool{}
+	for _, site := range allSites {
+		mp[site.Name] = true
+	}
+
 	for _, site := range sites {
-		if site.Name == newSite.Name {
-			return ErrDuplicate
+		if mp[site.Name] {
+			errMsg := fmt.Sprintf("Site '%s' already exists", site.Name)
+			return errors.New(errMsg)
 		}
 	}
 
-	if err := s.r.AddSite(newSite); err != nil {
-		return err
+	for _, site := range sites {
+		s.r.AddSite(site)
 	}
 	return nil
-}
-
-func (s *service) RemoveSite(id string) error {
-	return s.r.RemoveSite(id)
 }
