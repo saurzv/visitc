@@ -1,7 +1,7 @@
 package json
 
 import (
-	"fmt"
+	"log"
 	"path"
 	"runtime"
 	"time"
@@ -13,9 +13,7 @@ import (
 )
 
 const (
-	dir             = "/data/"
-	CollectionCount = "count-data"
-	CollectionSite  = "sites"
+	dir = "/data/"
 )
 
 type Storage struct {
@@ -51,9 +49,6 @@ func (s *Storage) AddSite(newSite adding.Site) error {
 		},
 	}
 
-	// if err := s.db.Write(CollectionSite, newS.ID, &newS); err != nil {
-	// 	return err
-	// }
 	if err := s.db.Insert(newS); err != nil {
 		return err
 	}
@@ -72,26 +67,43 @@ func (s *Storage) RemoveSite(site Site) error {
 
 func (s *Storage) GetSite(id string) (listing.Site, error) {
 	var site Site
-	var gotSite listing.Site
+	var siteFound listing.Site
 
-	if err := s.db.Open(Site{}).Where("siteID", "=", id).Get().AsEntity(site); err != nil {
-		return gotSite, err
+	if err := s.db.Open(Site{}).Where("siteID", "=", id).First().AsEntity(&site); err != nil {
+		return siteFound, err
 	}
 
-	gotSite.ID = site.SiteID
-	gotSite.Name = site.Name
-	gotSite.Created = site.Analytics.Created
+	siteFound.ID = site.SiteID
+	siteFound.Name = site.Name
+	siteFound.TotalCount = site.Analytics.TotalCount
 
-	return gotSite, nil
+	return siteFound, nil
 }
 
 func (s *Storage) GetAllSites() []listing.Site {
 	list := []listing.Site{}
 	err := s.db.Open(Site{}).Get().AsEntity(&list)
 	if err != nil {
-		fmt.Println(err)
 		return list
 	}
-
 	return list
+}
+
+func (s *Storage) IncreaseCount(id string) error {
+	var site Site
+
+	err := s.db.Open(Site{}).Where("siteID", "=", id).First().AsEntity(&site)
+	if err != nil {
+		log.Fatal(err)
+		// return err
+	}
+
+	site.Analytics.LastVisited = time.Now()
+	site.Analytics.TotalCount += 1
+	err = s.db.Update(site)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
