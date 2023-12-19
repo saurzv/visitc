@@ -5,6 +5,8 @@ import (
 	"fmt"
 )
 
+// TO-DO: Write better GetId function
+
 func GetId(prefix string) (string, error) {
 	b := make([]byte, 8)
 	_, err := rand.Read(b)

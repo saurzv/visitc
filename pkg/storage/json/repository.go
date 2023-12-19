@@ -99,6 +99,7 @@ func (s *Storage) IncreaseCount(id string) error {
 	}
 
 	site.Analytics.LastVisited = time.Now()
+	// TO-DO: Write better algorithm for analytics
 	site.Analytics.TotalCount += 1
 	err = s.db.Update(site)
 	if err != nil {
