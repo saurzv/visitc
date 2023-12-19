@@ -9,6 +9,7 @@ import (
 	scribble "github.com/nanobox-io/golang-scribble"
 	"github.com/saurzv/visitc/pkg/adding"
 	"github.com/saurzv/visitc/pkg/listing"
+	"github.com/saurzv/visitc/pkg/storage"
 )
 
 const (
@@ -37,13 +38,24 @@ func NewStorage() (*Storage, error) {
 }
 
 func (s *Storage) AddSite(newSite adding.Site) error {
+	id, err := storage.GetId(newSite.Name)
+	if err != nil {
+		return err
+	}
 	newS := Site{
-		ID:      "1", // write generate id func
+		ID:      id,
 		Name:    newSite.Name,
 		Created: time.Now(),
 	}
 
 	if err := s.db.Write(CollectionSite, newS.ID, &newS); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Storage) RemoveSite(id string) error {
+	if err := s.db.Delete(CollectionSite, id); err != nil {
 		return err
 	}
 	return nil

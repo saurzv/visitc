@@ -10,11 +10,13 @@ var ErrDuplicate = errors.New("site alreay exists")
 
 type Service interface {
 	AddSite(Site) error
+	RemoveSite(string) error
 }
 
 type Repository interface {
 	AddSite(Site) error
-	GetAllSite() []listing.Site
+	RemoveSite(string) error
+	GetAllSites() []listing.Site
 }
 
 type service struct {
@@ -26,7 +28,7 @@ func NewService(r Repository) Service {
 }
 
 func (s *service) AddSite(newSite Site) error {
-	sites := s.r.GetAllSite()
+	sites := s.r.GetAllSites()
 	for _, site := range sites {
 		if site.Name == newSite.Name {
 			return ErrDuplicate
@@ -37,4 +39,8 @@ func (s *service) AddSite(newSite Site) error {
 		return err
 	}
 	return nil
+}
+
+func (s *service) RemoveSite(id string) error {
+	return s.r.RemoveSite(id)
 }
