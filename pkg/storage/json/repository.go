@@ -76,6 +76,7 @@ func (s *Storage) GetSite(id string) (listing.Site, error) {
 	siteFound.ID = site.SiteID
 	siteFound.Name = site.Name
 	siteFound.TotalCount = site.Analytics.TotalCount
+	siteFound.Created = site.Analytics.Created.Format("Jan 02, '06")
 
 	return siteFound, nil
 }

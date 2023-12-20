@@ -1,0 +1,67 @@
+{{ define "svg" }}
+<svg
+  width="300"
+  height="72"
+  viewBox="0 0 300 72"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  role="img"
+  aria-labelledby="descId"
+>
+  <style>
+    .header {
+      font: 600 18px "Segoe UI", Ubuntu, Sans-Serif;
+      fill: #eb1f6a;
+      animation: fadeInAnimation 0.8s ease-in-out forwards;
+    }
+
+    .subheader {
+      font: 600 10px "Segoe UI", Ubuntu, Sans-Serif;
+      fill: #eb1f6a;
+      animation: fadeInAnimation 0.8s ease-in-out forwards;
+    }
+
+    .cnt {
+      font: 600 43px "Segoe UI", Ubuntu, Sans-Serif;
+      fill: #eb1f6a;
+    }
+
+    @keyframes fadeInAnimation {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
+  <rect
+    data-testid="card-bg"
+    x="0.5"
+    y="0.5"
+    rx="4.5"
+    height="99%"
+    stroke="#e4e2e2"
+    width="299"
+    fill="#272822"
+    stroke-opacity="1"
+  />
+  <g data-testid="card-title" transform="translate(25, 35)">
+    <g transform="translate(0, 0)">
+      <text x="0" y="0" class="header" data-testid="header">Visits</text>
+    </g>
+  </g>
+  <g data-testid="card-subtitle" transform="translate(25, 50)">
+    <g transform="translate(0, 0)">
+      <text x="0" y="0" class="subheader" data-testid="subheader">
+        Since {{ .Created }}
+      </text>
+    </g>
+  </g>
+  <g data-testid="card-count" transform="translate(200, 50)">
+    <g transform="translate(0, 0)">
+      <text x="0" y="0" class="cnt" data-testid="cnt">{{ .TotalCount }}</text>
+    </g>
+  </g>
+</svg>
+{{ end }}

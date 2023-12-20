@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/saurzv/visitc/pkg/analytics"
 	"github.com/saurzv/visitc/pkg/listing"
+	"github.com/saurzv/visitc/pkg/rendering"
 	"github.com/saurzv/visitc/pkg/storage/json"
 )
 
@@ -29,6 +29,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(lister.GetSite("blog_ce93042ea4b3a5d9"))
+	site, _ := lister.GetSite("blog_ce93042ea4b3a5d9")
+	// fmt.Print(site.Human())
+	err = rendering.SVG(site)
+	if err != nil {
+		log.Fatal(err)
+	}
 	// fmt.Println(lister.GetSites())
 }
