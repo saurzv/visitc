@@ -13,11 +13,13 @@ import (
 )
 
 const (
-	dir = "/data/"
+	siteDir  = "/data/sites"
+	visitDir = "/data/visits"
 )
 
 type Storage struct {
-	db *simdb.Driver
+	db      *simdb.Driver
+	visitDB *simdb.Driver
 }
 
 func NewStorage() (*Storage, error) {
@@ -28,7 +30,12 @@ func NewStorage() (*Storage, error) {
 	_, file, _, _ := runtime.Caller(0)
 	p := path.Dir(file)
 
-	s.db, err = simdb.New(p + dir)
+	s.db, err = simdb.New(p + siteDir)
+	if err != nil {
+		return nil, err
+	}
+
+	s.visitDB, err = simdb.New(p + visitDir)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +83,7 @@ func (s *Storage) GetSite(id string) (listing.Site, error) {
 	siteFound.ID = site.SiteID
 	siteFound.Name = site.Name
 	siteFound.TotalCount = site.Analytics.TotalCount
-	siteFound.Created = site.Analytics.Created.Format("Jan 02, '06")
+	siteFound.Created = site.Analytics.Created.Format("Jan 02 '06")
 
 	return siteFound, nil
 }
@@ -108,4 +115,50 @@ func (s *Storage) IncreaseCount(id string) error {
 	}
 
 	return nil
+}
+
+// IP
+
+func (s *Storage) AddVisit(addr string) error {
+	var visit Visit
+	err := s.visitDB.Open(Visit{}).Where("ip", "=", addr).First().AsEntity(&visit)
+	if err == nil {
+		return err
+	}
+
+	newVist := Visit{
+		IP:          addr,
+		LastVisited: time.Now(),
+	}
+	err = s.visitDB.Insert(newVist)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Storage) UpdateLastVisit(addr string) error {
+	var visit Visit
+	err := s.visitDB.Open(Visit{}).Where("ip", "=", addr).First().AsEntity(&visit)
+	if err != nil {
+		return err
+	}
+
+	visit.LastVisited = time.Now()
+	err = s.visitDB.Update(visit)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Storage) GetLastVisit(addr string) (time.Time, error) {
+	var visit Visit
+	err := s.visitDB.Open(Visit{}).Where("ip", "=", addr).First().AsEntity(&visit)
+	if err != nil {
+		return time.Now(), err
+	}
+
+	return visit.LastVisited, nil
 }
