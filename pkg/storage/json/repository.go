@@ -6,9 +6,9 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/saurzv/visitc/pkg/adding"
 	"github.com/saurzv/visitc/pkg/listing"
 	"github.com/saurzv/visitc/pkg/storage"
+	"github.com/saurzv/visitc/pkg/updating"
 	"github.com/sonyarouje/simdb"
 )
 
@@ -36,7 +36,7 @@ func NewStorage() (*Storage, error) {
 	return s, nil
 }
 
-func (s *Storage) AddSite(newSite adding.Site) error {
+func (s *Storage) AddSite(newSite updating.Site) error {
 	id, err := storage.GetId(newSite.Name)
 	if err != nil {
 		return err
@@ -55,9 +55,9 @@ func (s *Storage) AddSite(newSite adding.Site) error {
 	return nil
 }
 
-func (s *Storage) RemoveSite(site Site) error {
+func (s *Storage) RemoveSite(site listing.Site) error {
 	siteToRemove := Site{
-		SiteID: site.SiteID,
+		SiteID: site.ID,
 	}
 	if err := s.db.Delete(siteToRemove); err != nil {
 		return err

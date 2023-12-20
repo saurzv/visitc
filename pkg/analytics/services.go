@@ -1,4 +1,4 @@
-package counting
+package analytics
 
 type Repository interface {
 	IncreaseCount(string) error
@@ -6,6 +6,7 @@ type Repository interface {
 
 type Service interface {
 	IncreaseCount(string) error
+	IsValidVisit(string) bool // TO-DO: Need a definition of valid visits
 }
 
 type service struct {
@@ -14,6 +15,10 @@ type service struct {
 
 func NewService(r Repository) Service {
 	return &service{r}
+}
+
+func (s *service) IsValidVisit(ip string) bool {
+	return false
 }
 
 func (s *service) IncreaseCount(id string) error {

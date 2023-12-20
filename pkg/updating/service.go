@@ -1,4 +1,4 @@
-package adding
+package updating
 
 import (
 	"errors"
@@ -8,11 +8,14 @@ import (
 )
 
 type Service interface {
+	RemoveSite(string) error
 	AddSite(...Site) error
 }
 
 type Repository interface {
 	AddSite(Site) error
+	GetSite(string) (listing.Site, error)
+	RemoveSite(listing.Site) error
 	GetAllSites() []listing.Site
 }
 
@@ -41,6 +44,17 @@ func (s *service) AddSite(sites ...Site) error {
 
 	for _, site := range sites {
 		s.r.AddSite(site)
+	}
+	return nil
+}
+
+func (s *service) RemoveSite(id string) error {
+	availableSite, err := s.r.GetSite(id)
+	if err != nil {
+		return err
+	}
+	if err := s.r.RemoveSite(availableSite); err != nil {
+		return err
 	}
 	return nil
 }

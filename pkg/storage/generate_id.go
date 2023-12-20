@@ -3,6 +3,7 @@ package storage
 import (
 	"crypto/rand"
 	"fmt"
+	"strings"
 )
 
 // TO-DO: Write better GetId function
@@ -14,5 +15,5 @@ func GetId(prefix string) (string, error) {
 		return "", err
 	}
 
-	return fmt.Sprintf("%s_%x", prefix, b), nil
+	return fmt.Sprintf("%s_%x", strings.ToLower(prefix), b), nil
 }

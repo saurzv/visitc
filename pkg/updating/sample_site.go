@@ -1,4 +1,4 @@
-package adding
+package updating
 
 var DefaultSite = []Site{
 	{
